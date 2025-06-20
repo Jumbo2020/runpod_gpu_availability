@@ -10,7 +10,7 @@ def get_gcp_gpu_locations_detailed():
     Fetches available GPU types and their locations from GCP Compute Engine API.
     """
     # Load credentials from environment variable or file
-    service_account_key_json = os.getenv('AIzaSyDIbhfPTnBqWud-lO6yAUAnP-IsaOtVBuU')
+    service_account_key_json = os.getenv('GCP_SERVICE_ACCOUNT_KEY')
     if not service_account_key_json:
         print("Error: GCP_SERVICE_ACCOUNT_KEY environment variable not set.")
         return []
