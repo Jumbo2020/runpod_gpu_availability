@@ -1,7 +1,23 @@
 name: Get RunPod GPU Locations with API Key and Save to Repo
 
 on:
-  workflow_dispatch:
+  # workflow_dispatch: # Comment out or remove this line to disable manual trigger
+  schedule:
+    # Runs every hour
+    # For cron syntax:
+    # minute (0-59)
+    # hour (0-23)
+    # day of month (1-31)
+    # month (1-12)
+    # day of week (0-6, where 0 and 6 are Sunday and Saturday)
+    #
+    # '0 * * * *' means:
+    # 0: at minute 0
+    # *: every hour
+    # *: every day of the month
+    # *: every month
+    # *: every day of the week
+    - cron: '0 * * * *'
 
 jobs:
   get-gpu-data:
