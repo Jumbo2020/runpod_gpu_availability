@@ -1,35 +1,35 @@
-name: Get RunPod GPU Locations
+name: Get RunPod GPU Locations and Save to Repo # שם ה-workflow ב-GitHub Actions
 
 on:
-  workflow_dispatch: # Allows you to manually trigger the workflow from the GitHub UI
+  workflow_dispatch: # מאפשר הפעלה ידנית של ה-workflow מהממשק של GitHub
 
 jobs:
   get-gpu-data:
-    runs-on: ubuntu-latest # Specifies the operating system for the job
+    runs-on: ubuntu-latest # מערכת ההפעלה שבה ירוץ ה-job
+    permissions:
+      contents: write # *** חובה: הרשאת כתיבה לריפוזיטורי כדי לבצע commit ו-push ***
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4 # Action to check out your repository code
+    - name: Checkout repository # שלב 1: משיכת קוד הריפוזיטורי
+      uses: actions/checkout@v4
 
-    - name: Set up Python
+    - name: Set up Python # שלב 2: הגדרת סביבת Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.x' # Use the latest Python 3.x version
+        python-version: '3.x'
 
-    - name: Install dependencies
+    - name: Install dependencies # שלב 3: התקנת ספריות Python נדרשות (כמו requests)
       run: |
         python -m pip install --upgrade pip
-        pip install requests # Install the 'requests' library to make HTTP requests
+        pip install requests
 
-    - name: Run Python script to get GPU locations
+    - name: Run Python script to get GPU locations # שלב 4: הרצת סקריפט הפייתון ושמירת הפלט לקובץ זמני
       run: python get_runpod_gpus.py > runpod_gpu_locations.txt
-      # This command executes your Python script and redirects its output
-      # to a file named 'runpod_gpu_locations.txt'.
 
-    - name: Upload GPU locations artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: runpod-gpu-locations
-        path: runpod_gpu_locations.txt
-        # This step uploads the generated file as an artifact, so you can download it
-        # from the GitHub Actions run summary.
+    - name: Commit and Push GPU locations to repository # שלב 5: ביצוע commit ו-push של הקובץ המעודכן לריפוזיטורי
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add runpod_gpu_locations.txt
+        git commit -m "Update RunPod GPU locations" || echo "No changes to commit"
+        git push
