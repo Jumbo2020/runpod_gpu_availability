@@ -1,0 +1,2 @@
+Error making request to RunPod API: 404 Client Error: Not Found for url: https://www.runpod.io/api/v2/marketplace/pods
+Could not retrieve RunPod GPU locations.
