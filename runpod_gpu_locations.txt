@@ -6,6 +6,7 @@ Available RunPod GPU Types and Locations with Stock Status:
 - H100 NVL in US-CA-2 (Status: Low)
 - H100 NVL in US-GA-2 (Status: Low)
 - H100 NVL in US-KS-2 (Status: Low)
+- H100 PCIe in US-KS-2 (Status: Low)
 - L4 in EUR-IS-1 (Status: Low)
 - L4 in EUR-IS-2 (Status: Low)
 - L40 in EUR-IS-1 (Status: Medium)
