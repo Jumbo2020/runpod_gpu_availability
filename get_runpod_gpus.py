@@ -2,11 +2,11 @@ import requests
 import json
 import os
 
-def get_runpod_gpu_locations():
+def get_runpod_gpu_locations_graphql():
     """
-    Fetches available GPU locations from RunPod's API using an API Key.
+    Fetches available GPU types from RunPod's GraphQL API.
     """
-    api_url = "https://api.runpod.io/v2/user/pods" # Example URL - verify with RunPod API documentation
+    api_url = "https://api.runpod.io/graphql"
 
     runpod_api_key = os.getenv('RUNPOD_API_KEY')
 
@@ -15,33 +15,66 @@ def get_runpod_gpu_locations():
         return []
 
     headers = {
+        "Content-Type": "application/json",
         "Authorization": f"Bearer {runpod_api_key}",
-        # Verify the correct header for RunPod API Key. It might be "X-Api-Key" or "Api-Key".
+    }
+
+    # GraphQL query to get GPU types and their properties
+    # You might need to adjust this query based on what fields RunPod's GraphQL API exposes for availability.
+    # The 'locations' or 'datacenters' might be under a different query or nested within GPU objects.
+    graphql_query = """
+    query GpuTypes {
+      gpuTypes {
+        id
+        displayName
+        memoryInGb
+        # There might be other fields like 'locations' or 'regions' here.
+        # You'll need to inspect the actual response from the API.
+        # For now, we'll just get the GPU types.
+      }
+    }
+    """
+
+    payload = {
+        "query": graphql_query
     }
 
     try:
-        response = requests.get(api_url, headers=headers)
+        response = requests.post(api_url, headers=headers, json=payload)
         response.raise_for_status()
         data = response.json()
 
-        available_locations = set()
-        
-        # Adjust parsing logic based on actual RunPod API response structure.
-        if isinstance(data, dict) and 'pods' in data:
-            for pod in data['pods']:
-                if 'datacenterId' in pod:
-                    available_locations.add(pod['datacenterId'])
-        elif isinstance(data, list):
-             for item in data:
-                if 'datacenterId' in item:
-                    available_locations.add(item['datacenterId'])
-        
-        if not available_locations:
-            print("No specific GPU locations found in API response.")
-            print("Please verify the API endpoint and response structure.")
+        # The data structure for GraphQL responses is usually `data` -> `yourQueryName`
+        if data and 'data' in data and 'gpuTypes' in data['data']:
+            gpu_types = data['data']['gpuTypes']
+            locations = set()
+            
+            # Since 'gpuTypes' might not directly contain 'datacenterId',
+            # we'll list the available GPU display names as a form of "location/type".
+            # If you find a field that directly indicates a physical location in the response,
+            # you can adjust this logic to use it.
+            for gpu_type in gpu_types:
+                display_name = gpu_type.get('displayName')
+                if display_name:
+                    locations.add(display_name)
+                # If you find location information (e.g., 'regions', 'datacenterId')
+                # in the GPU type object, add it here:
+                # if 'region' in gpu_type:
+                #    locations.add(gpu_type['region'])
+
+
+            if not locations:
+                print("No GPU types found in GraphQL API response.")
+                print("Please verify the GraphQL query and response structure.")
+                return []
+            
+            return sorted(list(locations))
+        else:
+            print("Unexpected response structure from GraphQL API.")
+            print(f"Full response: {json.dumps(data, indent=2)}")
+            if 'errors' in data:
+                print(f"GraphQL Errors: {json.dumps(data['errors'], indent=2)}")
             return []
-        
-        return sorted(list(available_locations))
 
     except requests.exceptions.RequestException as e:
         print(f"Error making request to RunPod API: {e}")
@@ -58,10 +91,10 @@ def get_runpod_gpu_locations():
         return []
 
 if __name__ == "__main__":
-    locations = get_runpod_gpu_locations()
+    locations = get_runpod_gpu_locations_graphql()
     if locations:
-        print("Available RunPod GPU Locations:")
+        print("Available RunPod GPU Types/Locations:")
         for loc in locations:
             print(f"- {loc}")
     else:
-        print("Could not retrieve RunPod GPU locations.")
+        print("Could not retrieve RunPod GPU types/locations.")
