@@ -4,6 +4,8 @@ on:
   schedule:
     # Runs every hour
     - cron: '0 * * * *'
+  workflow_dispatch:
+    # Allows manual triggering from GitHub Actions tab
 
 jobs:
   get-gpu-data:
@@ -35,5 +37,5 @@ jobs:
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
         git add gcp_gpu_locations.txt
-        git commit - Worksheetsm "Update GCP GPU locations" || echo "No changes to commit"
+        git commit -m "Update GCP GPU locations" || echo "No changes to commit"
         git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git HEAD:main
