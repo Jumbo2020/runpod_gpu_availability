@@ -2,11 +2,12 @@ import requests
 import json
 import os
 
-def get_runpod_gpu_locations_graphql():
+def get_runpod_gpu_locations():
     """
-    Fetches available GPU types from RunPod's GraphQL API.
+    Fetches available GPU locations from RunPod's REST API using an API Key.
     """
-    api_url = "https://api.runpod.io/graphql"
+    # This is the expected endpoint for marketplace pods as per recent RunPod API docs.
+    api_url = "https://rest.runpod.io/v1/marketplace/pods"
 
     runpod_api_key = os.getenv('RUNPOD_API_KEY')
 
@@ -17,64 +18,48 @@ def get_runpod_gpu_locations_graphql():
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {runpod_api_key}",
-    }
-
-    # GraphQL query to get GPU types and their properties
-    # You might need to adjust this query based on what fields RunPod's GraphQL API exposes for availability.
-    # The 'locations' or 'datacenters' might be under a different query or nested within GPU objects.
-    graphql_query = """
-    query GpuTypes {
-      gpuTypes {
-        id
-        displayName
-        memoryInGb
-        # There might be other fields like 'locations' or 'regions' here.
-        # You'll need to inspect the actual response from the API.
-        # For now, we'll just get the GPU types.
-      }
-    }
-    """
-
-    payload = {
-        "query": graphql_query
+        # RunPod's REST API typically uses "Authorization: Bearer YOUR_API_KEY"
     }
 
     try:
-        response = requests.post(api_url, headers=headers, json=payload)
+        response = requests.get(api_url, headers=headers)
         response.raise_for_status()
         data = response.json()
 
-        # The data structure for GraphQL responses is usually `data` -> `yourQueryName`
-        if data and 'data' in data and 'gpuTypes' in data['data']:
-            gpu_types = data['data']['gpuTypes']
-            locations = set()
-            
-            # Since 'gpuTypes' might not directly contain 'datacenterId',
-            # we'll list the available GPU display names as a form of "location/type".
-            # If you find a field that directly indicates a physical location in the response,
-            # you can adjust this logic to use it.
-            for gpu_type in gpu_types:
-                display_name = gpu_type.get('displayName')
-                if display_name:
-                    locations.add(display_name)
-                # If you find location information (e.g., 'regions', 'datacenterId')
-                # in the GPU type object, add it here:
-                # if 'region' in gpu_type:
-                #    locations.add(gpu_type['region'])
+        # The response structure for this endpoint is likely a list of pod objects.
+        # We want to extract 'gpuId' (the type) and 'dataCenterId' (the location).
+        
+        # Use a set to store unique combinations of GPU type and location
+        available_gpu_locations = set()
 
+        if data and isinstance(data, list): # Expecting a list of pod objects directly
+            for pod in data:
+                gpu_type = pod.get('gpuId')
+                datacenter_id = pod.get('dataCenterId')
+                
+                if gpu_type and datacenter_id:
+                    available_gpu_locations.add(f"{gpu_type} in {datacenter_id}")
+                # You might also want to filter by 'minBidPrice', 'currentBidPrice', 'gpuCount', etc.
+                # if pod.get('gpuCount', 0) > 0 and pod.get('has  InternetAccess', False):
+                #     available_gpu_locations.add(f"{gpu_type} in {datacenter_id}")
 
-            if not locations:
-                print("No GPU types found in GraphQL API response.")
-                print("Please verify the GraphQL query and response structure.")
-                return []
-            
-            return sorted(list(locations))
+        elif data and isinstance(data, dict) and 'pods' in data: # In case it's nested under a 'pods' key
+             for pod in data['pods']:
+                gpu_type = pod.get('gpuId')
+                datacenter_id = pod.get('dataCenterId')
+                if gpu_type and datacenter_id:
+                    available_gpu_locations.add(f"{gpu_type} in {datacenter_id}")
         else:
-            print("Unexpected response structure from GraphQL API.")
+            print("Unexpected response structure from RunPod API.")
             print(f"Full response: {json.dumps(data, indent=2)}")
-            if 'errors' in data:
-                print(f"GraphQL Errors: {json.dumps(data['errors'], indent=2)}")
             return []
+
+        if not available_gpu_locations:
+            print("No available GPU locations found. The API might not have returned any current pods.")
+            print("Please check RunPod's marketplace or your API key's permissions.")
+            return []
+        
+        return sorted(list(available_gpu_locations))
 
     except requests.exceptions.RequestException as e:
         print(f"Error making request to RunPod API: {e}")
@@ -91,10 +76,10 @@ def get_runpod_gpu_locations_graphql():
         return []
 
 if __name__ == "__main__":
-    locations = get_runpod_gpu_locations_graphql()
+    locations = get_runpod_gpu_locations()
     if locations:
-        print("Available RunPod GPU Types/Locations:")
+        print("Available RunPod GPU Types and Locations:")
         for loc in locations:
             print(f"- {loc}")
     else:
-        print("Could not retrieve RunPod GPU types/locations.")
+        print("Could not retrieve RunPod GPU types and locations.")
