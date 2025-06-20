@@ -1,43 +1,35 @@
-name: RUNPOD GPU Availability
+name: Get RunPod GPU Locations
 
 on:
-  schedule:
-    - cron: '*/15 * * * *'  # every 15 minutes
-  workflow_dispatch:
+  workflow_dispatch: # Allows you to manually trigger the workflow from the GitHub UI
 
 jobs:
-  update:
-    runs-on: ubuntu-latest
+  get-gpu-data:
+    runs-on: ubuntu-latest # Specifies the operating system for the job
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v4 # Action to check out your repository code
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.11
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x' # Use the latest Python 3.x version
 
-      - name: Install dependencies
-        run: pip install requests
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests # Install the 'requests' library to make HTTP requests
 
-      - name: Debug API Key
-        run: echo "First 5 chars of key: ${RUNPOD_API_KEY:0:5}"
-        env:
-          RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+    - name: Run Python script to get GPU locations
+      run: python get_runpod_gpus.py > runpod_gpu_locations.txt
+      # This command executes your Python script and redirects its output
+      # to a file named 'runpod_gpu_locations.txt'.
 
-      - name: Fetch GPU availability from RunPod
-        run: |
-          python fetch_runpod_gpu_availability.py
-        env:
-          RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
-
-      - name: Commit and push GPU data
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add runpod_gpu_locations.json
-          git commit -m "Update RUNPOD GPU availability" || echo "No changes"
-          git push https://x-access-token:${GH_PAT}@github.com/${{ github.repository }} HEAD:main
+    - name: Upload GPU locations artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: runpod-gpu-locations
+        path: runpod_gpu_locations.txt
+        # This step uploads the generated file as an artifact, so you can download it
+        # from the GitHub Actions run summary.
