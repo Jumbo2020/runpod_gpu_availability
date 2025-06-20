@@ -2,8 +2,8 @@ name: Get GCP GPU Locations with API Key and Save to Repo
 
 on:
   schedule:
-    # Runs every hour
-    - cron: '0 * * * *'
+    # Runs once a day at 21:00 IDT (18:00 UTC)
+    - cron: '0 18 * * *'
   workflow_dispatch:
     # Allows manual triggering from GitHub Actions tab
 
@@ -30,7 +30,9 @@ jobs:
     - name: Run Python script to get GPU locations
       env:
         GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-      run: python get_gcp_gpus.py > gcp_gpu_locations.txt
+      run: |
+        echo "GCP_SERVICE_ACCOUNT_KEY length: ${#GCP_SERVICE_ACCOUNT_KEY}"
+        python get_gcp_gpus.py > gcp_gpu_locations.txt
 
     - name: Commit and Push GPU locations to repository
       run: |
