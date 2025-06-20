@@ -1,0 +1,2 @@
+Error decoding GCP service account JSON: Expecting value: line 1 column 1 (char 0)
+Could not retrieve GCP GPU types and locations, or none are available.
