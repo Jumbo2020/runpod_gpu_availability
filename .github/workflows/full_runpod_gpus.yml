@@ -1,4 +1,4 @@
-name: Get RunPod GPU Locations with API Key and Save to Repo
+name: Full RunPod GPUs
 
 on:
   workflow_dispatch: # Enable manual trigger since scheduled trigger is removed
