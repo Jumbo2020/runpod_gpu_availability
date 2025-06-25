@@ -604,7 +604,7 @@ Error making request for NVIDIA RTX 3070 in EU-SE-1: 401 Client Error: Unauthori
 RunPod API Response content (Error): {"error":{}}
 Error making request for NVIDIA RTX 3070 in EUR-IS-1: 401 Client Error: Unauthorized for url: https://api.runpod.io/graphql
 RunPod API Response content (Error): {"error":{}}
-Error making request for NVIDIA RTX 3070 in EUR-IS-2: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
+Error making request for NVIDIA RTX 3070 in EUR-IS-2: 401 Client Error: Unauthorized for url: https://api.runpod.io/graphql
 RunPod API Response content (Error): {"error":{}}
 Error making request for NVIDIA RTX 3070 in EUR-IS-3: 401 Client Error: Unauthorized for url: https://api.runpod.io/graphql
 RunPod API Response content (Error): {"error":{}}
@@ -1514,7 +1514,7 @@ Error making request for NVIDIA V100 SXM2 in AP-JP-1: 401 Client Error: Unauthor
 RunPod API Response content (Error): {"error":{}}
 Error making request for NVIDIA V100 SXM2 in CA-MTL-1: 401 Client Error: Unauthorized for url: https://api.runpod.io/graphql
 RunPod API Response content (Error): {"error":{}}
-Error making request for NVIDIA V100 SXM2 in CA-MTL-2: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
+Error making request for NVIDIA V100 SXM2 in CA-MTL-2: 401 Client Error: Unauthorized for url: https://api.runpod.io/graphql
 RunPod API Response content (Error): {"error":{}}
 Error making request for NVIDIA V100 SXM2 in EU-CZ-1: 401 Client Error: Unauthorized for url: https://api.runpod.io/graphql
 RunPod API Response content (Error): {"error":{}}
