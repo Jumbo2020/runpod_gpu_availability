@@ -112,8 +112,8 @@ Error making request for NVIDIA A30 in US-GA-2: 401 Client Error: Unauthorized f
 RunPod API Response content (Error): {"error":{}}
 Error making request for NVIDIA A30 in US-IL-1: 401 Client Error: Unauthorized for url: https://api.runpod.io/graphql
 RunPod API Response content (Error): {"error":{}}
-Error making request for NVIDIA A30 in US-KS-2: 401 Client Error: Unauthorized for url: https://api.runpod.io/graphql
-RunPod API Response content (Error): {"error":{}}
+Error making request for NVIDIA A30 in US-KS-2: 503 Server Error: Service Unavailable for url: https://api.runpod.io/graphql
+RunPod API Response content (Error): {"message":"Service Unavailable"}
 Error making request for NVIDIA A30 in US-MD-1: 401 Client Error: Unauthorized for url: https://api.runpod.io/graphql
 RunPod API Response content (Error): {"error":{}}
 Error making request for NVIDIA A30 in US-NC-1: 401 Client Error: Unauthorized for url: https://api.runpod.io/graphql
