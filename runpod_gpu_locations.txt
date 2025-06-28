@@ -416,7 +416,7 @@ Error making request for NVIDIA L4 in US-TX-3: 401 Client Error: Unauthorized fo
 RunPod API Response content (Error): {"error":{}}
 Error making request for NVIDIA L4 in US-WA-1: 401 Client Error: Unauthorized for url: https://api.runpod.io/graphql
 RunPod API Response content (Error): {"error":{}}
-Error making request for NVIDIA L4 in US-UT-1: 401 Client Error: Unauthorized for url: https://api.runpod.io/graphql
+Error making request for NVIDIA L4 in US-UT-1: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
 RunPod API Response content (Error): {"error":{}}
 Error making request for NVIDIA L40 in AP-JP-1: 401 Client Error: Unauthorized for url: https://api.runpod.io/graphql
 RunPod API Response content (Error): {"error":{}}
